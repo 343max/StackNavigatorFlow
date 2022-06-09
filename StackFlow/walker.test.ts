@@ -1,12 +1,9 @@
 import { walkStack } from "./walker"
 describe("StackFlowWalker", () => {
   it("starts", () => {
-    const res = walkStack(
-      ({ start }) => {
-        start("hello")
-      },
-      { stack: [] }
-    )
+    const res = walkStack(({ start }) => {
+      start("hello")
+    }, [])
     expect(res.startScreen).toBe("hello")
     expect(res.nextStep).toBeNull()
   })
@@ -17,28 +14,27 @@ describe("StackFlowWalker", () => {
         const res = start("hello")
         expect(res).toEqual({ prop: "good" })
       },
-      {
-        stack: [
-          {
-            screenName: "hello",
-            completed: true,
-            outParams: { prop: "good" },
-          },
-        ],
-      }
+      [
+        {
+          screenName: "hello",
+          completed: true,
+          outParams: { prop: "good" },
+        },
+      ]
     )
   })
 
   it("throws when start doesn't match", () => {
     expect(() =>
-      walkStack((x) => x.start("unexpected"), {
-        stack: [
+      walkStack(
+        (x) => x.start("unexpected"),
+        [
           {
             screenName: "expected",
             completed: false,
           },
-        ],
-      })
+        ]
+      )
     ).toThrow("inconsistent start expected 'expected', got: 'unexpected'")
   })
 
@@ -49,14 +45,12 @@ describe("StackFlowWalker", () => {
           start("hello")
           start("hello2")
         },
-        {
-          stack: [
-            {
-              screenName: "hello",
-              completed: false,
-            },
-          ],
-        }
+        [
+          {
+            screenName: "hello",
+            completed: false,
+          },
+        ]
       )
     ).toThrow("'start' must only be called once and first")
   })
@@ -67,14 +61,12 @@ describe("StackFlowWalker", () => {
         start("start")
         navigate("next")
       },
-      {
-        stack: [
-          {
-            screenName: "start",
-            completed: true,
-          },
-        ],
-      }
+      [
+        {
+          screenName: "start",
+          completed: true,
+        },
+      ]
     )
     expect(res.nextStep).toEqual({ action: "navigate", to: "next" })
   })
@@ -86,18 +78,16 @@ describe("StackFlowWalker", () => {
           start("start")
           navigate("next")
         },
-        {
-          stack: [
-            {
-              screenName: "start",
-              completed: true,
-            },
-            {
-              screenName: "something different",
-              completed: false,
-            },
-          ],
-        }
+        [
+          {
+            screenName: "start",
+            completed: true,
+          },
+          {
+            screenName: "something different",
+            completed: false,
+          },
+        ]
       )
     ).toThrow(
       "inconsistent navigation expected: 'something different' got: 'next'"
@@ -111,19 +101,17 @@ describe("StackFlowWalker", () => {
           start("start")
           navigate("next", { a: 42 })
         },
-        {
-          stack: [
-            {
-              screenName: "start",
-              completed: true,
-            },
-            {
-              screenName: "next",
-              completed: true,
-              inParams: { a: 23 },
-            },
-          ],
-        }
+        [
+          {
+            screenName: "start",
+            completed: true,
+          },
+          {
+            screenName: "next",
+            completed: true,
+            inParams: { a: 23 },
+          },
+        ]
       )
     ).toThrow("inconsistent params for screen 'next'")
   })
@@ -135,18 +123,16 @@ describe("StackFlowWalker", () => {
         navigate("next")
         navigate("not there yet")
       },
-      {
-        stack: [
-          {
-            screenName: "start",
-            completed: true,
-          },
-          {
-            screenName: "next",
-            completed: false,
-          },
-        ],
-      }
+      [
+        {
+          screenName: "start",
+          completed: true,
+        },
+        {
+          screenName: "next",
+          completed: false,
+        },
+      ]
     )
     expect(res.nextStep).toEqual({ action: "navigate", to: "next" })
   })
@@ -158,18 +144,16 @@ describe("StackFlowWalker", () => {
         navigate("already done")
         navigate("next")
       },
-      {
-        stack: [
-          {
-            screenName: "start",
-            completed: true,
-          },
-          {
-            screenName: "already done",
-            completed: true,
-          },
-        ],
-      }
+      [
+        {
+          screenName: "start",
+          completed: true,
+        },
+        {
+          screenName: "already done",
+          completed: true,
+        },
+      ]
     )
     expect(res.nextStep).toEqual({ action: "navigate", to: "next" })
   })

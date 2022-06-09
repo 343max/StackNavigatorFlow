@@ -1,4 +1,4 @@
-import { StackFlowInternalState, StackFlowHandler } from "./StackFlow"
+import { StackFlowInternalStack, StackFlowHandler } from "./StackFlow"
 import { StackFlowError } from "./StackFlowError"
 
 type RouteName = string | symbol | number
@@ -22,7 +22,7 @@ type WalkerResult = { startScreen: RouteName; nextStep: NextStep | null }
 
 export const walkStack = (
   flow: StackFlowHandler<any, any>,
-  { stack }: StackFlowInternalState
+  stack: StackFlowInternalStack
 ): WalkerResult => {
   const state: {
     startScreen: RouteName | undefined

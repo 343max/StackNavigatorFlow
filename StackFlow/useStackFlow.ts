@@ -30,19 +30,19 @@ export const useStackFlow = <
 >(
   screen: RouteName
 ): UseStackFlow<ParamList, ReturnParamList, RouteName> => {
-  const { flow, state, setState } = React.useContext(stackFlowContext)
+  const { flow, stack, setStack } = React.useContext(stackFlowContext)
   const { navigate } = useNavigation<NavigationProp<ParamList>>()
   const { params } = useRoute<RouteProp<ParamList, RouteName>>()
 
   return {
     params: params as NonNullable<typeof params>,
     complete: (item: any) => {
-      if (state.stack.length === 0)
+      if (stack.length === 0)
         throw new StackFlowError(
           `tried to complete '${String(screen)}' before starting`
         )
 
-      const [last, ...restReversed] = state.stack.reverse()
+      const [last, ...restReversed] = stack.reverse()
 
       if (last.screenName !== screen)
         throw new StackFlowError(
@@ -66,21 +66,19 @@ export const useStackFlow = <
         },
       ]
 
-      const { nextStep } = walkStack(flow, { stack: newStack })
+      const { nextStep } = walkStack(flow, newStack)
 
       if (nextStep === null) {
         return
       } else if (nextStep.action === "navigate") {
-        setState({
-          stack: [
-            ...newStack,
-            {
-              screenName: nextStep.to as string,
-              completed: false,
-              inParams: nextStep.params,
-            },
-          ],
-        })
+        setStack([
+          ...newStack,
+          {
+            screenName: nextStep.to as string,
+            completed: false,
+            inParams: nextStep.params,
+          },
+        ])
         navigate(nextStep.to as any, nextStep.params as any)
       } else {
         throw new StackFlowError(`unknown action: ${nextStep.action}`)

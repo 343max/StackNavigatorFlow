@@ -45,32 +45,28 @@ export const useCreateStackFlow = <
   flow: StackFlowHandler<ParamList, ReturnParamList>
   initialRouteName: keyof ParamList
 } => {
-  const { startScreen } = walkStack(stackFlow, { stack: [] })
+  const { startScreen } = walkStack(stackFlow, [])
   return { flow: stackFlow, initialRouteName: startScreen as string }
 }
 
-export type StackFlowInternalState = {
-  stack: StackItem[]
-}
+export type StackFlowInternalStack = StackItem[]
 
 export const stackFlowContext = React.createContext<{
   flow: StackFlowHandler<any, any>
-  state: StackFlowInternalState
-  setState: (state: StackFlowInternalState) => void
+  stack: StackFlowInternalStack
+  setStack: (state: StackFlowInternalStack) => void
 }>(undefined!)
 
 export const StackFlowProvider: React.FC<
   React.PropsWithChildren<{ flow: StackFlowHandler<any, any> }>
 > = ({ flow, children }) => {
-  const [state, setState] = React.useState<StackFlowInternalState>(() => {
-    const { startScreen } = walkStack(flow, { stack: [] })
-    return { stack: [{ screenName: startScreen as string, completed: false }] }
+  const [stack, setStack] = React.useState<StackFlowInternalStack>(() => {
+    const { startScreen } = walkStack(flow, [])
+    return [{ screenName: startScreen as string, completed: false }]
   })
 
-  console.log(state.stack)
-
   return (
-    <stackFlowContext.Provider value={{ flow, state, setState }}>
+    <stackFlowContext.Provider value={{ flow, stack, setStack }}>
       {children}
     </stackFlowContext.Provider>
   )
