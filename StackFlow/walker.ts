@@ -17,7 +17,7 @@ class ReachedEndError extends Error {
   }
 }
 
-export class WalkerError extends Error {}
+export class StackFlowError extends Error {}
 
 type WalkerResult = { startScreen: RouteName; nextStep: NextStep | null }
 
@@ -38,9 +38,9 @@ export const walkStack = (
     flow({
       start: (startScreen) => {
         if (state.cursor !== 0)
-          throw new WalkerError("'start' must only be called once and first")
+          throw new StackFlowError("'start' must only be called once and first")
         if (stack.length > 0 && stack[0].screenName !== startScreen)
-          throw new WalkerError(
+          throw new StackFlowError(
             `inconsistent start expected '${
               stack[0].screenName
             }', got: '${String(startScreen)}'`
@@ -63,14 +63,14 @@ export const walkStack = (
           })
 
         if (stackItem.screenName !== screenName)
-          throw new WalkerError(
+          throw new StackFlowError(
             `inconsistent navigation expected: '${
               stackItem.screenName
             }' got: '${String(screenName)}'`
           )
 
         if (JSON.stringify(stackItem.inParams) !== JSON.stringify(params))
-          throw new WalkerError(
+          throw new StackFlowError(
             `inconsistent params for screen '${String(screenName)}'`
           )
 
@@ -93,7 +93,7 @@ export const walkStack = (
     }
   }
   if (state.startScreen === undefined)
-    throw new WalkerError("'start' must be called exactly once")
+    throw new StackFlowError("'start' must be called exactly once")
 
   return { startScreen: state.startScreen, nextStep: state.nextStep }
 }

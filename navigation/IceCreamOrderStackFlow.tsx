@@ -2,7 +2,8 @@ import {
   IceCreamOrderStackParamList,
   IceCreamOrderStackReturnParamList,
 } from "../types"
-import { useCreateStackFlow, useStackFlow } from "../StackFlow/StackFlow"
+import { useCreateStackFlow } from "../StackFlow/StackFlow"
+import { useStackFlow } from "../StackFlow/useStackFlow"
 
 export const useIceCreamOrderStackFlow = <
   RouteName extends keyof IceCreamOrderStackParamList
