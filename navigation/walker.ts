@@ -2,7 +2,11 @@ import { StackFlowInternalState, StackFlowHandler } from "./StackFlow"
 
 type RouteName = string | symbol | number
 
-type NextStep = { action: "navigate"; to: RouteName }
+type NextStep = {
+  action: "navigate"
+  to: RouteName
+  params: Record<string, any>
+}
 
 class ReachedEndError extends Error {
   nextStep: NextStep | null
@@ -52,7 +56,11 @@ export const walkStack = (
         const [screenName, params] = args
         const stackItem = stack[state.cursor]
         if (stackItem === undefined)
-          throw new ReachedEndError({ action: "navigate", to: screenName })
+          throw new ReachedEndError({
+            action: "navigate",
+            to: screenName,
+            params,
+          })
 
         if (stackItem.screenName !== screenName)
           throw new WalkerError(
@@ -67,7 +75,11 @@ export const walkStack = (
           )
 
         if (!stackItem.completed)
-          throw new ReachedEndError({ action: "navigate", to: screenName })
+          throw new ReachedEndError({
+            action: "navigate",
+            to: screenName,
+            params,
+          })
 
         state.cursor += 1
         return stackItem.outParams

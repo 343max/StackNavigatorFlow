@@ -1,7 +1,14 @@
-import { TypedNavigator, useNavigation } from "@react-navigation/native"
+import {
+  NavigationProp,
+  ParamListBase,
+  RouteProp,
+  TypedNavigator,
+  useNavigation,
+  useRoute,
+} from "@react-navigation/native"
 import React from "react"
 import { RootStackParamList, RootStackReturnParamList } from "../types"
-import { walkStack } from "./walker"
+import { WalkerError, walkStack } from "./walker"
 
 export type StackItem = {
   screenName: string
@@ -59,6 +66,7 @@ type UseStackFlow<
   >,
   RouteName extends keyof ParamList
 > = {
+  params: ReturnParamList
   complete: (result: ReturnParamList[RouteName]) => void
 }
 
@@ -75,9 +83,13 @@ const context = React.createContext<{
 export const StackFlowProvider: React.FC<
   React.PropsWithChildren<{ flow: StackFlowHandler<any, any> }>
 > = ({ flow, children }) => {
-  const [state, setState] = React.useState<StackFlowInternalState>({
-    stack: [],
+  const [state, setState] = React.useState<StackFlowInternalState>(() => {
+    const { startScreen } = walkStack(flow, { stack: [] })
+    return { stack: [{ screenName: startScreen as string, completed: false }] }
   })
+
+  console.log(state.stack)
+
   return (
     <context.Provider value={{ flow, state, setState }}>
       {children}
@@ -87,13 +99,67 @@ export const StackFlowProvider: React.FC<
 
 export const useStackFlow = <
   ParamList extends { [X in string]: object | undefined },
-  ReturnParamList extends Record<
-    keyof ParamList,
-    object | string | number | undefined
+  ReturnParamList extends Readonly<
+    Record<keyof ParamList, object | string | number | undefined>
   >,
   RouteName extends keyof ParamList
 >(
   screen: RouteName
 ): UseStackFlow<ParamList, ReturnParamList, RouteName> => {
-  return { complete: (item: any) => alert(item) }
+  const { flow, state, setState } = React.useContext(context)
+  const { navigate } = useNavigation<NavigationProp<ParamList>>()
+  const { params } = useRoute<RouteProp<ParamList>>()
+  return {
+    params: (params ?? {}) as ReturnParamList,
+    complete: (item: any) => {
+      if (state.stack.length === 0)
+        throw new WalkerError(
+          `tried to complete '${String(screen)}' before starting`
+        )
+
+      const [last, ...restReversed] = state.stack.reverse()
+
+      if (last.screenName !== screen)
+        throw new WalkerError(
+          `expected to complete screen '${last.screenName}', got '${String(
+            screen
+          )} instead`
+        )
+
+      if (last.completed)
+        throw new WalkerError(
+          `screen '${String(screen)}' called 'complete' multiple times`
+        )
+
+      const newStack = [
+        ...restReversed.reverse(),
+        {
+          screenName: last.screenName,
+          completed: true,
+          inParams: last.inParams,
+          outParams: item,
+        },
+      ]
+
+      const { nextStep } = walkStack(flow, { stack: newStack })
+
+      if (nextStep === null) {
+        return
+      } else if (nextStep.action === "navigate") {
+        setState({
+          stack: [
+            ...newStack,
+            {
+              screenName: nextStep.to as string,
+              completed: false,
+              inParams: nextStep.params,
+            },
+          ],
+        })
+        navigate(nextStep.to as any, nextStep.params as any)
+      } else {
+        throw new WalkerError(`unknown action: ${nextStep.action}`)
+      }
+    },
+  }
 }
