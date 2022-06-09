@@ -66,7 +66,7 @@ type UseStackFlow<
   >,
   RouteName extends keyof ParamList
 > = {
-  params: ReturnParamList
+  params: Readonly<ParamList[RouteName]>
   complete: (result: ReturnParamList[RouteName]) => void
 }
 
@@ -108,9 +108,10 @@ export const useStackFlow = <
 ): UseStackFlow<ParamList, ReturnParamList, RouteName> => {
   const { flow, state, setState } = React.useContext(context)
   const { navigate } = useNavigation<NavigationProp<ParamList>>()
-  const { params } = useRoute<RouteProp<ParamList>>()
+  const { params } = useRoute<RouteProp<ParamList, RouteName>>()
+
   return {
-    params: (params ?? {}) as ReturnParamList,
+    params: params as NonNullable<typeof params>,
     complete: (item: any) => {
       if (state.stack.length === 0)
         throw new WalkerError(
