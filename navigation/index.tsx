@@ -8,7 +8,7 @@ import { SummaryScreen } from "../screens/SummaryScreen"
 import { WaffleExtrasPicker } from "../screens/WaffleExtras"
 import { IceCreamOrderStackParamList } from "../types"
 import { useCreateIceCreamOrderStackFlow } from "./IceCreamOrderStackFlow"
-import { StackFlowProvider } from "./StackFlow"
+import { StackFlowProvider } from "../StackFlow/StackFlow"
 
 export default function Navigation() {
   return (
