@@ -26,8 +26,15 @@ export type RootStackParamList = {
   SummaryScreen: {
     flavor: Flavor
     container: Container
-    waffleExtras: WaffleExtra | undefined
+    waffleExtras: WaffleExtra | null
   }
+}
+
+export type RootStackReturnParamList = {
+  FlavorPicker: Flavor
+  ContainerPicker: Container
+  WaffleExtrasPicker: WaffleExtra
+  SummaryScreen: undefined
 }
 
 export type RootStackScreenProps<Screen extends keyof RootStackParamList> =

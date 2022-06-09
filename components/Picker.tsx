@@ -2,12 +2,15 @@ import React from "react"
 import { FlatList, TouchableOpacity, Text, View } from "react-native"
 import tw from "twrnc"
 
-type Props = {
-  items: readonly string[]
-  onSelect: (item: string) => void
+type Props<T extends string> = {
+  items: readonly T[]
+  onSelect: (item: T) => void
 }
 
-export const Picker: React.FC<Props> = ({ items, onSelect }) => {
+export const Picker = <T extends string>({
+  items,
+  onSelect,
+}: Props<T>): JSX.Element => {
   return (
     <FlatList
       style={tw.style("flex-1 bg-white")}

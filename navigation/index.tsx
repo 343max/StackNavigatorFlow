@@ -1,28 +1,17 @@
-import {
-  NavigationContainer,
-  DefaultTheme,
-  DarkTheme,
-} from "@react-navigation/native"
+import { NavigationContainer, DefaultTheme } from "@react-navigation/native"
 import { createNativeStackNavigator } from "@react-navigation/native-stack"
 import * as React from "react"
-import { ColorSchemeName } from "react-native"
 import { ContainerPicker } from "../screens/ContainerPicker"
 
 import { FlavorPicker } from "../screens/FlavorPicker"
 import { WaffleExtrasPicker } from "../screens/WaffleExtras"
 import { RootStackParamList } from "../types"
-import LinkingConfiguration from "./LinkingConfiguration"
+import { useCreateIceCreamOrderStackFlow } from "./IceCreamOrderStackFlow"
+import { StackFlowProvider } from "./StackFlow"
 
-export default function Navigation({
-  colorScheme,
-}: {
-  colorScheme: ColorSchemeName
-}) {
+export default function Navigation() {
   return (
-    <NavigationContainer
-      linking={LinkingConfiguration}
-      theme={colorScheme === "dark" ? DarkTheme : DefaultTheme}
-    >
+    <NavigationContainer theme={DefaultTheme}>
       <RootNavigator />
     </NavigationContainer>
   )
@@ -35,11 +24,18 @@ export default function Navigation({
 const Stack = createNativeStackNavigator<RootStackParamList>()
 
 function RootNavigator() {
+  const iceCreamOrderFlow = useCreateIceCreamOrderStackFlow()
+
   return (
-    <Stack.Navigator>
-      <Stack.Screen name="FlavorPicker" component={FlavorPicker} />
-      <Stack.Screen name="ContainerPicker" component={ContainerPicker} />
-      <Stack.Screen name="WaffleExtrasPicker" component={WaffleExtrasPicker} />
-    </Stack.Navigator>
+    <StackFlowProvider flow={iceCreamOrderFlow}>
+      <Stack.Navigator>
+        <Stack.Screen name="FlavorPicker" component={FlavorPicker} />
+        <Stack.Screen name="ContainerPicker" component={ContainerPicker} />
+        <Stack.Screen
+          name="WaffleExtrasPicker"
+          component={WaffleExtrasPicker}
+        />
+      </Stack.Navigator>
+    </StackFlowProvider>
   )
 }

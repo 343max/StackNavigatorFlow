@@ -1,5 +1,6 @@
 import React from "react"
 import { Picker } from "../components/Picker"
+import { useIceCreamOrderStackFlow } from "../navigation/IceCreamOrderStackFlow"
 
 const containers = ["Waffle", "Donut", "Take Away Box"] as const
 export type Container = typeof containers[number]
@@ -9,5 +10,6 @@ export type ReturnParams = {
 }
 
 export const ContainerPicker: React.FC = () => {
-  return <Picker items={containers} onSelect={(item) => alert(item)} />
+  const { complete } = useIceCreamOrderStackFlow("ContainerPicker")
+  return <Picker items={containers} onSelect={complete} />
 }
