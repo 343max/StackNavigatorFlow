@@ -6,7 +6,8 @@ import {
   useNavigation,
   useRoute,
 } from "@react-navigation/native"
-import { StackFlowError, walkStack } from "./walker"
+import { walkStack } from "./walker"
+import { StackFlowError } from "./StackFlowError"
 
 type UseStackFlow<
   ParamList extends { [X in string]: object | undefined },

@@ -1,4 +1,5 @@
 import { StackFlowInternalState, StackFlowHandler } from "./StackFlow"
+import { StackFlowError } from "./StackFlowError"
 
 type RouteName = string | symbol | number
 
@@ -16,8 +17,6 @@ class ReachedEndError extends Error {
     this.nextStep = nextStep
   }
 }
-
-export class StackFlowError extends Error {}
 
 type WalkerResult = { startScreen: RouteName; nextStep: NextStep | null }
 
