@@ -7,7 +7,10 @@ import {
   useRoute,
 } from "@react-navigation/native"
 import React from "react"
-import { RootStackParamList, RootStackReturnParamList } from "../types"
+import {
+  IceCreamOrderStackParamList,
+  IceCreamOrderStackReturnParamList,
+} from "../types"
 import { WalkerError, walkStack } from "./walker"
 
 export type StackItem = {

@@ -15,11 +15,11 @@ import { WaffleExtra } from "./screens/WaffleExtras"
 
 declare global {
   namespace ReactNavigation {
-    interface RootParamList extends RootStackParamList {}
+    interface RootParamList extends IceCreamOrderStackParamList {}
   }
 }
 
-export type RootStackParamList = {
+export type IceCreamOrderStackParamList = {
   FlavorPicker: undefined
   ContainerPicker: undefined
   WaffleExtrasPicker: undefined
@@ -30,23 +30,9 @@ export type RootStackParamList = {
   }
 }
 
-export type RootStackReturnParamList = {
+export type IceCreamOrderStackReturnParamList = {
   FlavorPicker: Flavor
   ContainerPicker: Container
   WaffleExtrasPicker: WaffleExtra
   SummaryScreen: undefined
 }
-
-export type RootStackScreenProps<Screen extends keyof RootStackParamList> =
-  NativeStackScreenProps<RootStackParamList, Screen>
-
-export type RootTabParamList = {
-  TabOne: undefined
-  TabTwo: undefined
-}
-
-export type RootTabScreenProps<Screen extends keyof RootTabParamList> =
-  CompositeScreenProps<
-    BottomTabScreenProps<RootTabParamList, Screen>,
-    NativeStackScreenProps<RootStackParamList>
-  >

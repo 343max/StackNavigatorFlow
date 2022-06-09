@@ -1,22 +1,28 @@
-import { RootStackParamList, RootStackReturnParamList } from "../types"
+import {
+  IceCreamOrderStackParamList,
+  IceCreamOrderStackReturnParamList,
+} from "../types"
 import { useCreateStackFlow, useStackFlow } from "./StackFlow"
 
 export const useIceCreamOrderStackFlow = <
-  RouteName extends keyof RootStackParamList
+  RouteName extends keyof IceCreamOrderStackParamList
 >(
   screenName: RouteName
 ) =>
-  useStackFlow<RootStackParamList, RootStackReturnParamList, RouteName>(
-    screenName
-  )
+  useStackFlow<
+    IceCreamOrderStackParamList,
+    IceCreamOrderStackReturnParamList,
+    RouteName
+  >(screenName)
 
 export const useCreateIceCreamOrderStackFlow = () =>
-  useCreateStackFlow<RootStackParamList, RootStackReturnParamList>(
-    ({ start, navigate }) => {
-      const flavor = start("FlavorPicker")
-      const container = navigate("ContainerPicker")
-      const waffleExtras =
-        container === "Waffle" ? navigate("WaffleExtrasPicker") : null
-      navigate("SummaryScreen", { flavor, container, waffleExtras })
-    }
-  )
+  useCreateStackFlow<
+    IceCreamOrderStackParamList,
+    IceCreamOrderStackReturnParamList
+  >(({ start, navigate }) => {
+    const flavor = start("FlavorPicker")
+    const container = navigate("ContainerPicker")
+    const waffleExtras =
+      container === "Waffle" ? navigate("WaffleExtrasPicker") : null
+    navigate("SummaryScreen", { flavor, container, waffleExtras })
+  })

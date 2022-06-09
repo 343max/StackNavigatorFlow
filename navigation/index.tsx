@@ -6,7 +6,7 @@ import { ContainerPicker } from "../screens/ContainerPicker"
 import { FlavorPicker } from "../screens/FlavorPicker"
 import { SummaryScreen } from "../screens/SummaryScreen"
 import { WaffleExtrasPicker } from "../screens/WaffleExtras"
-import { RootStackParamList } from "../types"
+import { IceCreamOrderStackParamList } from "../types"
 import { useCreateIceCreamOrderStackFlow } from "./IceCreamOrderStackFlow"
 import { StackFlowProvider } from "./StackFlow"
 
@@ -22,7 +22,7 @@ export default function Navigation() {
  * A root stack navigator is often used for displaying modals on top of all other content.
  * https://reactnavigation.org/docs/modal
  */
-const Stack = createNativeStackNavigator<RootStackParamList>()
+const Stack = createNativeStackNavigator<IceCreamOrderStackParamList>()
 
 function RootNavigator() {
   const { flow, initialRouteName } = useCreateIceCreamOrderStackFlow()
