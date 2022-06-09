@@ -12,11 +12,11 @@ export const useIceCreamOrderStackFlow = <
 
 export const useCreateIceCreamOrderStackFlow = () =>
   useCreateStackFlow<RootStackParamList, RootStackReturnParamList>(
-    async ({ navigate }) => {
-      const flavor = await navigate("FlavorPicker")
-      const container = await navigate("ContainerPicker")
+    ({ start, navigate }) => {
+      const flavor = start("FlavorPicker")
+      const container = navigate("ContainerPicker")
       const waffleExtras =
-        container === "Waffle" ? await navigate("WaffleExtrasPicker") : null
-      await navigate("SummaryScreen", { flavor, container, waffleExtras })
+        container === "Waffle" ? navigate("WaffleExtrasPicker") : null
+      navigate("SummaryScreen", { flavor, container, waffleExtras })
     }
   )

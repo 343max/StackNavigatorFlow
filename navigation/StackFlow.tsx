@@ -1,27 +1,38 @@
-import { useNavigation } from "@react-navigation/native"
+import { TypedNavigator, useNavigation } from "@react-navigation/native"
 import React from "react"
 import { RootStackParamList, RootStackReturnParamList } from "../types"
 
-type StackFlowNavigator<
+export type StackItem = {
+  screenName: string
+  completed: boolean
+  inParams?: Record<string, any> | undefined
+  outParams?: any
+}
+
+type StackFlowNavigation<
   ParamList extends { [X in string]: object | undefined },
   ReturnParamList extends Record<
     keyof ParamList,
     object | string | number | undefined
   >
 > = {
+  start: <RouteName extends keyof ParamList>(
+    screen: RouteName
+  ) => ReturnParamList[RouteName]
   navigate: <RouteName extends keyof ParamList>(
     ...args: undefined extends ParamList[RouteName]
       ? [screen: RouteName] | [screen: RouteName, params: ParamList[RouteName]]
       : [screen: RouteName, params: ParamList[RouteName]]
-  ) => Promise<ReturnParamList[RouteName]>
+  ) => ReturnParamList[RouteName]
 }
 
-type StackItem = {
-  inParams: Record<string, object | undefined>
-  outParams: Record<string, object | string | number | undefined>
-}
-
-type StackFlow = {}
+export type StackFlowHandler<
+  ParamList extends { [X in string]: object | undefined },
+  ReturnParamList extends Record<
+    keyof ParamList,
+    object | string | number | undefined
+  >
+> = (navigation: StackFlowNavigation<ParamList, ReturnParamList>) => void
 
 export const useCreateStackFlow = <
   ParamList extends { [X in string]: object | undefined },
@@ -30,14 +41,10 @@ export const useCreateStackFlow = <
     object | string | number | undefined
   >
 >(
-  stackFlow: (
-    navigation: StackFlowNavigator<ParamList, ReturnParamList>
-  ) => Promise<void>
-): StackFlow => {
-  const stack: StackItem[] = []
+  stackFlow: StackFlowHandler<ParamList, ReturnParamList>
+): StackFlowHandler<ParamList, ReturnParamList> => {
+  return stackFlow
 }
-
-const context = React.createContext<StackFlow>(undefined!)
 
 type UseStackFlow<
   ParamList extends { [X in string]: object | undefined },
@@ -50,10 +57,27 @@ type UseStackFlow<
   complete: (result: ReturnParamList[RouteName]) => void
 }
 
+export type StackFlowInternalState = {
+  stack: StackItem[]
+}
+
+const context = React.createContext<{
+  flow: StackFlowHandler<any, any>
+  state: StackFlowInternalState
+  setState: (state: StackFlowInternalState) => void
+}>(undefined!)
+
 export const StackFlowProvider: React.FC<
-  React.PropsWithChildren<{ flow: StackFlow }>
+  React.PropsWithChildren<{ flow: StackFlowHandler<any, any> }>
 > = ({ flow, children }) => {
-  return <context.Provider value={flow}>{children}</context.Provider>
+  const [state, setState] = React.useState<StackFlowInternalState>({
+    stack: [],
+  })
+  return (
+    <context.Provider value={{ flow, state, setState }}>
+      {children}
+    </context.Provider>
+  )
 }
 
 export const useStackFlow = <

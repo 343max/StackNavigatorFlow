@@ -15,8 +15,9 @@ export const Picker = <T extends string>({
     <FlatList
       style={tw.style("flex-1 bg-white")}
       data={items}
+      keyExtractor={(item) => item}
       renderItem={({ item }) => (
-        <View key={item} style={tw.style("px-5 py-2")}>
+        <View style={tw.style("px-5 py-2")}>
           <TouchableOpacity
             key={item}
             style={tw.style("items-center bg-cyan-500 p-2 rounded-2")}

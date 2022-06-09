@@ -4,6 +4,7 @@ import * as React from "react"
 import { ContainerPicker } from "../screens/ContainerPicker"
 
 import { FlavorPicker } from "../screens/FlavorPicker"
+import { SummaryScreen } from "../screens/SummaryScreen"
 import { WaffleExtrasPicker } from "../screens/WaffleExtras"
 import { RootStackParamList } from "../types"
 import { useCreateIceCreamOrderStackFlow } from "./IceCreamOrderStackFlow"
@@ -28,13 +29,14 @@ function RootNavigator() {
 
   return (
     <StackFlowProvider flow={iceCreamOrderFlow}>
-      <Stack.Navigator>
+      <Stack.Navigator initialRouteName="FlavorPicker">
         <Stack.Screen name="FlavorPicker" component={FlavorPicker} />
         <Stack.Screen name="ContainerPicker" component={ContainerPicker} />
         <Stack.Screen
           name="WaffleExtrasPicker"
           component={WaffleExtrasPicker}
         />
+        <Stack.Screen name="SummaryScreen" component={SummaryScreen} />
       </Stack.Navigator>
     </StackFlowProvider>
   )
