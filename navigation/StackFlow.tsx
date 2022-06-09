@@ -1,6 +1,7 @@
 import { TypedNavigator, useNavigation } from "@react-navigation/native"
 import React from "react"
 import { RootStackParamList, RootStackReturnParamList } from "../types"
+import { walkStack } from "./walker"
 
 export type StackItem = {
   screenName: string
@@ -42,8 +43,12 @@ export const useCreateStackFlow = <
   >
 >(
   stackFlow: StackFlowHandler<ParamList, ReturnParamList>
-): StackFlowHandler<ParamList, ReturnParamList> => {
-  return stackFlow
+): {
+  flow: StackFlowHandler<ParamList, ReturnParamList>
+  initialRouteName: keyof ParamList
+} => {
+  const { startScreen } = walkStack(stackFlow, { stack: [] })
+  return { flow: stackFlow, initialRouteName: startScreen as string }
 }
 
 type UseStackFlow<

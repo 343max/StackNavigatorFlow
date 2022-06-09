@@ -25,11 +25,11 @@ export default function Navigation() {
 const Stack = createNativeStackNavigator<RootStackParamList>()
 
 function RootNavigator() {
-  const iceCreamOrderFlow = useCreateIceCreamOrderStackFlow()
+  const { flow, initialRouteName } = useCreateIceCreamOrderStackFlow()
 
   return (
-    <StackFlowProvider flow={iceCreamOrderFlow}>
-      <Stack.Navigator initialRouteName="FlavorPicker">
+    <StackFlowProvider flow={flow}>
+      <Stack.Navigator initialRouteName={initialRouteName}>
         <Stack.Screen name="FlavorPicker" component={FlavorPicker} />
         <Stack.Screen name="ContainerPicker" component={ContainerPicker} />
         <Stack.Screen
