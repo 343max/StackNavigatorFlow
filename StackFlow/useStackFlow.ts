@@ -37,7 +37,31 @@ export const useStackFlow = <
 
   React.useEffect(() => {
     const unsubscribe = addListener("beforeRemove", () => {
-      console.log("remove last")
+      const [current, rest] = arraysTail(stack)
+      console.log(current)
+      if (current === undefined)
+        throw new StackFlowError(
+          `tried to remove screen '${String(
+            screen
+          )}' but the stack is already empty`
+        )
+
+      if (current.screenName !== screen)
+        throw new StackFlowError(
+          `tried to remove screen '${String(
+            screen
+          )}' but top of the stack is '${current.screenName}'`
+        )
+
+      const [before, smallerRest] = arraysTail(rest)
+
+      if (before === undefined) {
+        setStack(smallerRest)
+      } else {
+        before.outParams = undefined
+        before.completed = false
+        setStack([...smallerRest, before])
+      }
     })
     return unsubscribe
   }, [])
