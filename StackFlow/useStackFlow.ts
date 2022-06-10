@@ -19,7 +19,9 @@ type UseStackFlow<
   RouteName extends keyof ParamList
 > = {
   params: Readonly<ParamList[RouteName]>
-  complete: (result: ReturnParamList[RouteName]) => void
+  complete: undefined extends ReturnParamList[RouteName]
+    ? (result?: undefined) => void
+    : (result: ReturnParamList[RouteName]) => void
 }
 
 export const useStackFlow = <
