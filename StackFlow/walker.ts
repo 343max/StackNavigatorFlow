@@ -3,11 +3,16 @@ import { StackFlowError } from "./StackFlowError"
 
 type RouteName = string | symbol | number
 
-type NextStep = {
-  action: "navigate"
-  to: RouteName
-  params: Record<string, any>
-}
+type NextStep =
+  | {
+      action: "navigate"
+      to: RouteName
+      params: Record<string, any>
+    }
+  | {
+      action: "startOver"
+      to: RouteName
+    }
 
 class ReachedEndError extends Error {
   nextStep: NextStep | null
@@ -82,6 +87,17 @@ export const walkStack = (
 
         state.cursor += 1
         return stackItem.outParams
+      },
+      startOver: (startOverScreen) => {
+        if (state.startScreen === undefined)
+          throw new StackFlowError(
+            "`start` needs to be called before `startOver`"
+          )
+
+        throw new ReachedEndError({
+          action: "startOver",
+          to: startOverScreen ?? state.startScreen,
+        })
       },
     })
   } catch (error) {

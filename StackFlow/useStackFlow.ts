@@ -34,13 +34,23 @@ export const useStackFlow = <
   screen: RouteName
 ): UseStackFlow<ParamList, ReturnParamList, RouteName> => {
   const { flow, stack, setStack } = React.useContext(stackFlowContext)
-  const { navigate, addListener } = useNavigation<NavigationProp<ParamList>>()
+  const { navigate, reset, addListener } =
+    useNavigation<NavigationProp<ParamList>>()
   const { params } = useRoute<RouteProp<ParamList, RouteName>>()
+
+  let shouldIgnoreBack = false
+  const ignoringBack = (cb: () => void) => {
+    shouldIgnoreBack = true
+    cb()
+    shouldIgnoreBack = false
+  }
 
   React.useEffect(() => {
     const unsubscribe = addListener("beforeRemove", () => {
+      if (shouldIgnoreBack) return
+
       const [current, rest] = arraysTail(stack)
-      console.log(current)
+      console.log({ moveBackFrom: current })
       if (current === undefined)
         throw new StackFlowError(
           `tried to remove screen '${String(
@@ -71,6 +81,7 @@ export const useStackFlow = <
   return {
     params: params as NonNullable<typeof params>,
     complete: (item: any) => {
+      console.log({ stack })
       const [last, rest] = arraysTail(stack)
 
       if (last === undefined)
@@ -114,8 +125,20 @@ export const useStackFlow = <
           },
         ])
         navigate(nextStep.to as any, nextStep.params as any)
+      } else if (nextStep.action === "startOver") {
+        ignoringBack(() =>
+          reset({
+            index: 0,
+            routes: [
+              {
+                name: nextStep.to as Extract<keyof ParamList, string>,
+              },
+            ],
+          })
+        )
+        setStack([{ screenName: nextStep.to as string, completed: false }])
       } else {
-        throw new StackFlowError(`unknown action: ${nextStep.action}`)
+        throw new StackFlowError("unknown action")
       }
     },
   }

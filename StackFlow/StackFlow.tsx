@@ -23,6 +23,7 @@ type StackFlowNavigation<
       ? [screen: RouteName] | [screen: RouteName, params: ParamList[RouteName]]
       : [screen: RouteName, params: ParamList[RouteName]]
   ) => ReturnParamList[RouteName]
+  startOver: <RouteName extends keyof ParamList>(screen?: RouteName) => never
 }
 
 export type StackFlowHandler<

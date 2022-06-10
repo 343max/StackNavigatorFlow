@@ -1,6 +1,7 @@
 import React from "react"
 import { FlatList, TouchableOpacity, Text, View } from "react-native"
 import tw from "twrnc"
+import { CyanButton } from "./CyanButton"
 
 type Props<T extends string> = {
   items: readonly T[]
@@ -18,13 +19,7 @@ export const Picker = <T extends string>({
       keyExtractor={(item) => item}
       renderItem={({ item }) => (
         <View style={tw.style("px-5 py-2")}>
-          <TouchableOpacity
-            key={item}
-            style={tw.style("items-center bg-cyan-500 p-2 rounded-2")}
-            onPress={() => onSelect(item)}
-          >
-            <Text style={tw.style("text-white font-bold")}>{item}</Text>
-          </TouchableOpacity>
+          <CyanButton onPress={() => onSelect(item)} label={item} />
         </View>
       )}
     />

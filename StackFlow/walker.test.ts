@@ -157,4 +157,36 @@ describe("StackFlowWalker", () => {
     )
     expect(res.nextStep).toEqual({ action: "navigate", to: "next" })
   })
+
+  it("starts over when start over is called", () => {
+    const res = walkStack(
+      ({ start, startOver }) => {
+        start("start")
+        startOver()
+      },
+      [
+        {
+          screenName: "start",
+          completed: true,
+        },
+      ]
+    )
+    expect(res.nextStep).toEqual({ action: "startOver", to: "start" })
+  })
+
+  it("starts over to other screen", () => {
+    const res = walkStack(
+      ({ start, startOver }) => {
+        start("start")
+        startOver("notStart")
+      },
+      [
+        {
+          screenName: "start",
+          completed: true,
+        },
+      ]
+    )
+    expect(res.nextStep).toEqual({ action: "startOver", to: "notStart" })
+  })
 })

@@ -20,10 +20,11 @@ export const useCreateIceCreamOrderStackFlow = () =>
   useCreateStackFlow<
     IceCreamOrderStackParamList,
     IceCreamOrderStackReturnParamList
-  >(({ start, navigate }) => {
+  >(({ start, navigate, startOver }) => {
     const flavor = start("FlavorPicker")
     const container = navigate("ContainerPicker")
     const waffleExtras =
       container === "Waffle" ? navigate("WaffleExtrasPicker") : null
     navigate("SummaryScreen", { flavor, container, waffleExtras })
+    startOver()
   })
