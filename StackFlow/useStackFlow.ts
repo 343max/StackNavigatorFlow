@@ -1,3 +1,4 @@
+import { arraysTail } from "./arraysTail"
 import { stackFlowContext } from "./StackFlow"
 import React from "react"
 import {
@@ -31,18 +32,25 @@ export const useStackFlow = <
   screen: RouteName
 ): UseStackFlow<ParamList, ReturnParamList, RouteName> => {
   const { flow, stack, setStack } = React.useContext(stackFlowContext)
-  const { navigate } = useNavigation<NavigationProp<ParamList>>()
+  const { navigate, addListener } = useNavigation<NavigationProp<ParamList>>()
   const { params } = useRoute<RouteProp<ParamList, RouteName>>()
+
+  React.useEffect(() => {
+    const unsubscribe = addListener("beforeRemove", () => {
+      console.log("remove last")
+    })
+    return unsubscribe
+  }, [])
 
   return {
     params: params as NonNullable<typeof params>,
     complete: (item: any) => {
-      if (stack.length === 0)
+      const [last, rest] = arraysTail(stack)
+
+      if (last === undefined)
         throw new StackFlowError(
           `tried to complete '${String(screen)}' before starting`
         )
-
-      const [last, ...restReversed] = stack.reverse()
 
       if (last.screenName !== screen)
         throw new StackFlowError(
@@ -57,7 +65,7 @@ export const useStackFlow = <
         )
 
       const newStack = [
-        ...restReversed.reverse(),
+        ...rest,
         {
           screenName: last.screenName,
           completed: true,
