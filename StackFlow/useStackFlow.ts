@@ -50,7 +50,6 @@ export const useStackFlow = <
       if (shouldIgnoreBack) return
 
       const [current, rest] = arraysTail(stack)
-      console.log({ moveBackFrom: current })
       if (current === undefined)
         throw new StackFlowError(
           `tried to remove screen '${String(
@@ -81,7 +80,6 @@ export const useStackFlow = <
   return {
     params: params as NonNullable<typeof params>,
     complete: (item: any) => {
-      console.log({ stack })
       const [last, rest] = arraysTail(stack)
 
       if (last === undefined)
